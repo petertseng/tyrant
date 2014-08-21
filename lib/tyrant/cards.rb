@@ -34,6 +34,7 @@ class Tyrant::Card
     10 => 'Occupation',
     11 => 'Worldship',
     12 => 'Flashpoint',
+    13 => 'Apocalypse',
     5000 => 'Reward',
     5001 => 'Promotional',
     5002 => 'Upgraded',
