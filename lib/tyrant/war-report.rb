@@ -161,6 +161,8 @@ COUNTS
     return {
       :"#{prefix}_players" => us_players.size,
       :"#{prefix}_inactives" => us_inactives.size,
+      :"#{prefix}_dealt" => sum_by_key(us, :dealt),
+      :"#{prefix}_taken" => sum_by_key(us, :taken),
       :"#{prefix}_ppb" => us_points.to_f / us_attack_battles,
       :"#{prefix}_attack_wins" => us_attack_wins,
       :"#{prefix}_attack_battles" => us_attack_battles,
