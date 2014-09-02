@@ -1,4 +1,5 @@
 require 'tyrant'
+require 'tyrant/sanitize'
 require 'tyrant/time'
 
 class Tyrant::Rival
