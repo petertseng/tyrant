@@ -187,7 +187,7 @@ class Tyrant::Cards
   # Returns: [cards, invalids]
   # cards is an Array where each element is [id, quantity]
   # invalids is a string of invalid hash characters
-  def self.unhash(hash)
+  def self.unhash(hash, valid_ids = nil)
     deck = []
     invalid = ''
     # prev_index = first base64 character, or nil if none.
@@ -229,6 +229,15 @@ class Tyrant::Cards
           # There was a previous card, and it is the same card as this card.
           # Increase the quantity of the previous card!
           deck[-1][1] += 1
+        elsif valid_ids && !valid_ids.include?(id) && deck[-1]
+          # Hmm, this card is invalid, but can we extend the previous card?
+          if (foil_id = try_foil(deck[-1][0], prev_index, valid_ids))
+            deck[-1][0] = foil_id
+            prev_index = index
+            next
+          else
+            deck.push([id, 1])
+          end
         else
           deck.push([id, 1])
         end
@@ -236,6 +245,12 @@ class Tyrant::Cards
       prev_index = nil
       offset4000 = false
     }
+
+    # There is a character left over?!?!
+    if deck[-1] && prev_index && valid_ids
+      foil_id = try_foil(deck[-1][0], prev_index, valid_ids)
+      deck[-1][0] = foil_id if foil_id
+    end
     return [deck, invalid]
   end
 
@@ -246,6 +261,13 @@ class Tyrant::Cards
   BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
            'abcdefghijklmnopqrstuvwxyz' +
            '0123456789+/'
+
+  def self.try_foil(prev_id, new_index, valid_ids)
+    prev_offset = prev_id > 4000 ? 4000 : 0
+    foil_id = (prev_id - prev_offset) * 64 + prev_offset + new_index
+    return foil_id if foil_id >= 10000 && valid_ids.include?(foil_id - 10000)
+    return nil
+  end
 
   # Resolves a single card name into an ID
   # Accepted formats are:
